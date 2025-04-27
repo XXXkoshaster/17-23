@@ -1,1 +1,2 @@
-# 17-23
+# Project of team 17-23 for mathmod
+## PSB - credit scoring
