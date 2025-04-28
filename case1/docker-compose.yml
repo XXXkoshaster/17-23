@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  scoring_app:
+    container_name: scoring_app
+    restart: always
+    build: .
+    networks:
+      - db_network
+      - web_network
+  nginx:
+    container_name: nginx
+    restart: always
+    image: "nginx:stable-alpine3.21-perl"
+    ports:
+      - "5085:5085"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - web_network
+    depends_on: 
+      - scoring_app
+networks:
+  db_network:
+    driver: bridge
+  web_network:
+    driver: bridge
+ 
