@@ -12,7 +12,7 @@ reasons = [
 
 def get_final_data():
     data = pd.DataFrame()
-    for i in range(10):
+    for i in range(100):
         data = data._append({"inn": random.randint(10**10,9*10**10), "name": random.choice(company_names), "default_score": random.uniform(0,1), "reason":random.choice(reasons)}, ignore_index=True)
 
     # print(data)

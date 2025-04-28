@@ -6,11 +6,45 @@
     <title>Flask DataFrame Table</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .search-container {
+            max-width: 800px;
+            margin: 30px auto;
+        }
+        #results {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h2 class="mb-4">Кредитный скоринг организаций</h2>
         
+        <div class="container search-container flex">            
+            <h2 class="mb-4">Кредитный скоринг организаций</h2>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="searchInput" placeholder="ИНН, Имя организации, Причина отказа ...">
+                <button class="btn btn-primary" type="button" id="searchButton">поиск</button>
+            </div>
+            
+            <div id="results">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <!-- Results will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <table class="table align-items-center mb-0">
             <thead>
                 <tr>
@@ -25,12 +59,12 @@
                     <th class="text-secondary opacity-7"></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tableBody">
                 {% for row in table_data %}
                 <tr>
-                    <th scope="row" class="align-middle text-center">
+                    <td scope="row" class="align-middle text-center">
                         <span class="text-secondary text-xs font-weight-bold">{{ row['inn'] }}</span>
-                    </th>
+                    </td>
                     <td scope="row" class="align-middle text-wide">
                         <span class="text-secondary text-xs font-weight-bold">{{ row['name'] }}</span>
                     </td>
@@ -53,5 +87,69 @@
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const tableBody = document.getElementById('tableBody');
+            // console.log(tableBody)
+            // Load all data initially
+            // fetchData('');
+            
+            // Search on button click
+            searchButton.addEventListener('click', function() {
+                fetchData(searchInput.value);
+            });
+            
+            // Search on Enter key
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    fetchData(searchInput.value);
+                }
+            });
+            
+            function fetchData(searchTerm) {
+                if(searchTerm == '') return;
+
+                fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `search_term=${searchTerm}`
+                })
+                .then(response => response.json())
+                .then(table_data => {
+                    updateTable(table_data);
+                })
+                .catch(error => console.error('Error:', error));
+            }
+            
+            function updateTable(table_data) {
+                tableBody.innerHTML = '';
+                
+                if (table_data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No results found</td></tr>';
+                    return;
+                }
+                
+                table_data.forEach(row_data => {
+                    const rowElement = document.createElement('tr');
+                    
+                    rowElement.innerHTML = `
+                        <td class=${"align-middle text-center"}><span class="text-secondary text-xs font-weight-bold">${row_data['inn']}<span></td>
+                        <td class=${"align-middle text-wide"}><span class="text-secondary text-xs font-weight-bold">${row_data['name']}<span></td>
+                        <td class=${"align-middle text-center"}><span class="text-secondary text-xs font-weight-bold">${row_data['default_score']}<span></td>
+                        <td class=${"align-middle text-wide"}><span class="text-secondary text-xs font-weight-bold">${row_data['reason']}<span></td>
+                    `;
+                    
+                    tableBody.appendChild(rowElement);
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>
