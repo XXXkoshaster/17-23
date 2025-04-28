@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template
 
-import case1.sentetic_data as sentetic_data
+import sentetic_data as sentetic_data
 
 app = Flask(__name__)
 
