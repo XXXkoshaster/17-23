@@ -19,6 +19,16 @@ services:
       - web_network
     depends_on: 
       - scoring_app
+  postgres_db:
+    container_name: postgres_db
+    image: postgres:bookworm
+    restart: always
+    env_file:
+      - .env
+    # volumes:
+      # - ./dataset:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
 networks:
   db_network:
     driver: bridge

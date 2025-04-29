@@ -18,6 +18,8 @@ COPY .env .env
 
 COPY . .
 
+
+
 # RUN flask db migrate
 # RUN flask db upgrade
 # RUN flask gen_api
