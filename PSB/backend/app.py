@@ -1,26 +1,35 @@
 
-from flask import Flask, render_template, jsonify, request
+from io import BytesIO
+from flask import Flask, render_template, jsonify, request, session, send_file, Response
+from flask_cors import CORS
+
+
 
 import sentetic_data as sentetic_data
-import operator as op
+import datetime
+import pandas as pd
+import gzip
 
+def load_data():
+    data = sentetic_data.get_final_data()
+    session['data'] = data.to_dict("records")
+    session["filtered"] = session["data"]
 
-
-data = sentetic_data.get_final_data()
 
 app = Flask(__name__)
+CORS(app)
 
+app.secret_key = "yout-secret-key"
 
-@app.route('/')
-def main():
-    return "main page i guess"
-
-
-
-@app.route("/data")
-def gen_data():
-    return data
-    # return sentetic_data.get_data()
+@app.route('/download', methods=['POST'])
+def download():    
+    time_stamp_now = datetime.datetime.now() #.strftime("%y_%m_%d_%s")
+    
+    return Response(
+        pd.DataFrame().from_dict(session["filtered"]).to_csv(),
+        mimetype='text/csv',
+        headers={'Content-disposition': 'attachment; filename=data.csv'}
+    )
 
 
 
@@ -32,29 +41,34 @@ def search():
         return jsonify({"res":"nodata"})
     
     # filter dataframe
-    # data = sentetic_data.get_final_data()
-    filtered = data[
+    data = pd.DataFrame(session["data"])
+    session["filtered"] = data[
         data["inn"].astype(str).str.contains(search_term) |
         data["name"].astype(str).str.contains(search_term) |
         data["reason"].astype(str).str.contains(search_term)
-    ]
+    ].to_dict("records")
 
-    print(filtered.head)
-    return jsonify(filtered.to_dict("records"))
+    return jsonify(session["filtered"])
+
+
 
 # for tesing
-@app.route("/reload_data")
+@app.route("/reload")
 def reload_data():
-    global data
-    data= sentetic_data.get_final_data()
+    # global data
+    load_data()
+
     return "reloaded"
 
-@app.route('/table')
+
+
+@app.route('/')
 def table_page():
-    
+
+    load_data()
     # request actual data from db processed by ml model
     # table_data = data #sentetic_data.get_final_data().to_dict("records")
-    return render_template("table.html", table_data=data.to_dict("records"))
+    return render_template("table.html", table_data=session["filtered"])
 
 
 
@@ -82,6 +96,6 @@ def table_apge_simple():
 if __name__ == '__main__':
     
     # get data from db
-    data = sentetic_data.get_data()
+    # data = sentetic_data.get_data()
 
-    app.run()
+    app.run(debug=True)
