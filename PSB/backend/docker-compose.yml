@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  scoring_app:
+    container_name: scoring_app
+    restart: always
+    build: .
+    networks:
+      - db_network
+      - web_network
+  nginx:
+    container_name: nginx
+    restart: always
+    image: "nginx:stable-alpine3.21-perl"
+    ports:
+      - "5085:5085"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - web_network
+    depends_on: 
+      - scoring_app
+  postgres_db:
+    container_name: postgres_db
+    image: postgres:bookworm
+    restart: always
+    env_file:
+      - .env
+    # volumes:
+      # - ./dataset:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+networks:
+  db_network:
+    driver: bridge
+  web_network:
+    driver: bridge
+ 
