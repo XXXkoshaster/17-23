@@ -21,7 +21,7 @@ engine = create_engine(f"postgresql://{config.POSTGRES_USER}:{config.POSTGRES_PA
 conn = engine.connect().execution_options(stream_results=True)
 
 def load_organizarion(table_name, inn):
-    return pd.read_sql(f"select * from {table_name} where Column1={inn}", con=conn)
+    return pd.read_sql(f"select * from {table_name} where Column1={inn}", con=conn).drop("index", axis=1)
 
 def load(table_name):
     return pd.read_sql(f"select * from {table_name}", con=conn).drop("index", axis=1)
@@ -31,12 +31,31 @@ def load_chunks(table_name, chunksize):
         yield chunk.drop("index", axis=1)
 
 def load_chunk(table_name, start, end):
-    return pd.read_sql(f"select * from {table_name} where rownum <= {end} and rownum >= {start}", con=conn)
+    return pd.read_sql(f"select * from {table_name} where index <= {end} and index >= {start}", con=conn).drop("index", axis=1)
 
 def store(table_name, df):
     df.to_sql(table_name, con=engine, if_exists="replace")
 
+def store_append(table_name, df):
+    df.to_sql(table_name, con=engine, if_exists="append")
 
+
+# def store_chunk(table_name, df):
+#     cur = engine.raw_connection().cursor()
+#     for row in df.to_dict("records"):
+        
+#         set_str = ""
+#         where_str = ""
+#         for key,val in row.items():
+#             set_str += f"{key} = {val}, "
+
+#         print(f"UPDATE {table_name} SET {set_str} WHERE {where_str}")
+#         # cur.execute(f"UPDATE {table_name} SET {set_str} WHERE {where_str}")
+
+#     # update db
+        # conn.commit()
+
+    
 
 if __name__ == "__main__":
     

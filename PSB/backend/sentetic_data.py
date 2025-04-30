@@ -11,9 +11,9 @@ reasons = [
 
 
 
-def get_final_data():
+def get_final_data(num):
     data = pd.DataFrame()
-    for i in range(1):
+    for i in range(num):
         data = data._append({"inn": random.randint(10**10,9*10**10), "name": random.choice(company_names), "default_score": random.uniform(0,1), "reason":random.choice(reasons)}, ignore_index=True)
 
     # print(data)
@@ -32,5 +32,14 @@ def get_organization_data():
 
 
 if __name__ == "__main__":
-    ds.store("sentetic_data",get_final_data())
+    # ds.store("sentetic_data",get_final_data(4))
     # get_organization_data()
+
+    df = ds.load_chunk("sentetic_data", 0, 0)
+    print(df)
+
+    # df = ds.load("sentetic_data")
+    # print(df)
+
+    df["name"] = "WUIUIUIU"
+    df = ds.store_chunk("sentetic_data",df)
