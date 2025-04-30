@@ -18,7 +18,7 @@ async def root():
 async def download():
     return {"message": "Hello World"}
 
-@app.get("/load")
+@app.get("/load_chunk")
 async def get_chunk():
     return di.load("sentetic_data").to_dict("records")
 

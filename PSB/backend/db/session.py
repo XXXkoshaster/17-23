@@ -30,6 +30,9 @@ def load_chunks(table_name, chunksize):
     for chunk in pd.read_sql(f"select * from {table_name}", con=conn, chunksize=chunksize):
         yield chunk.drop("index", axis=1)
 
+def load_chunk(table_name, start, end):
+    return pd.read_sql(f"select * from {table_name} where rownum <= {end} and rownum >= {start}", con=conn)
+
 def store(table_name, df):
     df.to_sql(table_name, con=engine, if_exists="replace")
 

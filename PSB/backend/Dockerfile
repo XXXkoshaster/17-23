@@ -24,5 +24,4 @@ COPY . .
 # RUN flask db upgrade
 # RUN flask gen_api
 
-# gunicorn
-CMD ["gunicorn", "--config", "gunicorn-cfg.py", "main:app"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5005"]
