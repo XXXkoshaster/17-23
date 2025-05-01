@@ -3,7 +3,14 @@
 import db.session as ds
 import pandas as pd
 
-filename = "table_predictions"
-df = pd.read_csv(f"{filename}.csv")
+csvs = ["table_predictions", "organizations", "kad_arbitr", "finances", "egrul"]
 
-ds.store(filename, df)
+for csv in csvs:
+    
+    print(f"reading {csv}")
+    df = pd.read_csv(f"{csv}.csv")
+    
+    print(f"writing {csv}")
+    ds.store(csv, df)
+    
+    print()
