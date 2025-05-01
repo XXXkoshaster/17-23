@@ -1,9 +1,22 @@
 import streamlit as st
 import pandas as pd
 import time
+import requests
 
-# Загрузка данных из CSV-файла
-data = pd.read_csv('data.csv')
+# # Загрузка данных из CSV-файла
+# data = pd.read_csv('data.csv')
+data = requests.post("http://127.0.0.1:80/load_chunk", json={"start": 0, "end": 5})
+data = pd.DataFrame(data.json())
+data = data[["inn","prdiction"]]
+data["inn"] = data["inn"].astype(int)
+
+organizations = requests.post("http://127.0.0.1:80/load_chunk_organizations", json={"start": 0, "end": 5})
+organizations = pd.DataFrame(organizations.json())
+organizations = organizations[["inn","name","status", "okved"]]
+organizations["inn"] = organizations["inn"].astype(int)
+
+table_data = data.merge(organizations, on="inn")
+print(table_data)
 
 # Настройка заголовка приложения
 st.title('Данные компаний')

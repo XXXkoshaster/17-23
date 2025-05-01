@@ -16,7 +16,7 @@ t1.markdown("## *Кредитный скоринг*")
 t2.text_input("ИНН, название, причина отказа, ...")
 
 
-res = requests.post("http://192.168.168.35:80/load_chunk", json={"start":0,"end":1})
+res = requests.post("http://0.0.0.0:80/load_chunk", json={"start":0,"end":1})
 print(res.ok)
 print(res)
 # print(res.json())

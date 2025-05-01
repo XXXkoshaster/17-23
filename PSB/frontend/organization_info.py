@@ -22,7 +22,7 @@ def preload_organization_data(inn):
                                 "1700_std", "1700_growth", "2100_mean", "2100_growth", "2110_mean", "2110_std", 
                                 "2110_growth", "2200_mean", "2200_growth", "2400_mean", "2400_std", "2400_growth",
                                 "current_ratio", "quick_ratio", "equity_ratio", "roa", "roe", "ros", "asset_turnover",
-                                "top5_features"]]
+                                "top5_features", "z_score"]]
     
     res = requests.post("http://127.0.0.1:80/load_organizarion_finance", json={"inn": inn})
 
@@ -48,13 +48,13 @@ okved = data["okved"].values[0]
 
 
 
-st.set_page_config(page_title='Скоринг органиции',  layout='wide')
+st.set_page_config(page_title='Кредитный скоринг организации',  layout='wide')
 
-st.markdown(f"## *Кридитный скоринг органиции*")
+st.markdown(f"## *Кредитный скоринг организации*")
 
 st.divider()
 
-col1, col2 = st.columns(2) 
+col1, col2 = st.columns(2)
 
 with col1:
     col11, col12 = col1.columns(2)
@@ -96,7 +96,7 @@ with col1:
         factor = factors[i]
         col = col11
         if i%2 == 1: col = col12
-        col.metric(f"{factor[0].replace("_", " ")}", f"{factor[2]:2.2f}",f"{numpy.sign(factor[2])}"[0], border=True)
+        col.metric(f"{factor[0].replace("_", " ")}", f"{numpy.abs(factor[2]):2.2f}",f"{numpy.sign(factor[2])}"[0], border=True)
 
 
 
@@ -104,7 +104,6 @@ with col2:
     
     print(finance_data.keys())
     print(finance_data)
-
     
     years = list(range(2020,2025))
     key1 = list(map(lambda x: f"{x}_1300", years))
@@ -112,32 +111,63 @@ with col2:
     key3 = list(map(lambda x: f"{x}_1700", years))
     key4 = list(map(lambda x: f"{x}_2110", years))
     key5 = list(map(lambda x: f"{x}_2400", years))
-    df = pd.DataFrame({"1300":finance_data[key1].values[0],
-                       "1600":finance_data[key2].values[0],
-                       "1700":finance_data[key3].values[0],
-                       "2110":finance_data[key4].values[0],
-                       "2400":finance_data[key5].values[0],
-                        "year": years })
     
+    df = pd.DataFrame({"Итоговый капитал":finance_data[key1].values[0]/1000,
+                       "Активный балнс":finance_data[key2].values[0]/1000,
+                       "Пассивный балнс":finance_data[key3].values[0]/1000,
+                       "Выручка":finance_data[key4].values[0]/1000,
+                       "Чистая прибыль (убыток)":finance_data[key5].values[0]/1000,
+                        "год": years })
     
-    lables = {
-        "1300": "Итоговый капитал",
-        "1600": "Активный балнс",
-        "1700": "Пассивный балнс",
-        "2210": "Выручка",
-        "2400": "Чистая прибыль (убыток)",
-    }
+
+    
+    # lables = {
+    #     "1300": "Итоговый капитал",
+    #     "1600": "Активный балнс",
+    #     "1700": "Пассивный балнс",
+    #     "2210": "Выручка",
+    #     "2400": "Чистая прибыль (убыток)"
+    # }
     # print(df)
     # print(finance_data[key1].values[0])
-    fig = px.line(df, x="year", y=["1300", "1600", "1700", "2110", "2400"], labels=lables)
+    fig = px.line(df, 
+                x="год",
+                y=["Итоговый капитал", "Активный балнс", "Пассивный балнс", "Выручка", "Чистая прибыль (убыток)"],
+                title="Отчетные суммы",
+                markers=True)
+    fig.update_layout(
+        yaxis=dict(
+            title=dict(
+                text="Сумма, тыс. руб."
+            ),
+            tickformat='d'
+        ),
+        xaxis_tickformat ='d',
+        # separators=".",
+
+    )
     # for year in range(2020, 2025):
     #     for k in finance_data.keys():
     #         pass
 
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
     
-
+    economics_metrix = {
+        "current_ratio": "Кэффициент текущей ликвидности",
+        "quick_ratio":"Кэффициент быстрой ликвидности",
+        "equity_ratio": "Кэффициент финнасовой независимости", 
+        "roa": "Рентабельность активов", 
+        "roe":"Рентабельность собственного капитала", 
+        "ros":"Рентабельность продаж", 
+        "asset_turnover":"Оборачеваемость активов",
+        "z_score":"Оборачеваемость активов"
+    }
     
+    container = col2.container(height=400)
+    col21, col22 = container.columns(2)
+    for key,val in economics_metrix.items():
+        col21.text(val)
+        col22.text(data[key].values[0])
 
 # ["1000"]["1100"]["СумОтч"]
     # st.plotly_chart()
