@@ -1,24 +1,33 @@
 version: '3.8'
 services:
-  scoring_app:
-    container_name: scoring_app
+  scoring_app_backend:
+    container_name: scoring_app_backend
     restart: always
     build: .
     networks:
       - db_network
       - web_network
+  
+  # scoring_app_frontend:
+  #   container_name: scoring_app_frontend
+  #   restart: always
+  #   build: ../frontend
+  #   networks:
+  #     - db_network
+  #     - web_network
+
   nginx:
     container_name: nginx
     restart: always
     image: "nginx:stable-alpine3.21-perl"
     ports:
-      - "5085:5085"
+      - "80:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d
     networks:
       - web_network
     depends_on: 
-      - scoring_app
+      - scoring_app_backend
   postgres_db:
     container_name: postgres_db
     image: postgres:bookworm

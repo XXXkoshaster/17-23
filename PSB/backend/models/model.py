@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class Organization(BaseModel):
-    inn: str
+    inn: int
     
 class Chunk(BaseModel):
     start: int
