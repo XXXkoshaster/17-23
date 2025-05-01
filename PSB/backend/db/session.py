@@ -20,7 +20,7 @@ engine = create_engine(f"postgresql://{config.POSTGRES_USER}:{config.POSTGRES_PA
 # important for chunk reading aother wise its all loaded in memory
 conn = engine.connect().execution_options(stream_results=True)
 
-def load_organizarion(table_name, inn):
+def load_by_inn(table_name, inn):
     return pd.read_sql(f"select * from {table_name} where Column1={inn}", con=conn).drop("index", axis=1)
 
 def load(table_name):
@@ -31,7 +31,7 @@ def load_chunks(table_name, chunksize):
         yield chunk.drop("index", axis=1)
 
 def load_chunk(table_name, start, end):
-    return pd.read_sql(f"select * from {table_name} where index <= {end} and index >= {start}", con=conn).drop("index", axis=1)
+    return pd.read_sql(f"select * from {table_name} where index >= {start} and index <= {end}", con=conn).drop("index", axis=1)
 
 def store(table_name, df):
     df.to_sql(table_name, con=engine, if_exists="replace")
@@ -57,12 +57,12 @@ def store_append(table_name, df):
 
     
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     
-    original_data = pd.read_csv("egrul_final.csv")
+#     original_data = pd.read_csv("egrul_final.csv")
 
-    store("egrul_final", original_data)
+#     store("egrul_final", original_data)
 
-    # read by chunks
-    for chunk_data_from_db in load_chunks("egrul_final", 1000):
-        print(chunk_data_from_db.info())
+#     # read by chunks
+#     for chunk_data_from_db in load_chunks("egrul_final", 1000):
+#         print(chunk_data_from_db.info())
