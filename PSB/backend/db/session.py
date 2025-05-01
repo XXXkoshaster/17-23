@@ -20,8 +20,8 @@ engine = create_engine(f"postgresql://{config.POSTGRES_USER}:{config.POSTGRES_PA
 # important for chunk reading aother wise its all loaded in memory
 conn = engine.connect().execution_options(stream_results=True)
 
-def load_by_inn(table_name, inn):
-    return pd.read_sql(f"select * from {table_name} where Column1={inn}", con=conn).drop("index", axis=1)
+def load_by_column(table_name, column_name, inn):
+    return pd.read_sql(f"select * from {table_name} where {column_name}={inn}", con=conn).drop("index", axis=1)
 
 def load(table_name):
     return pd.read_sql(f"select * from {table_name}", con=conn).drop("index", axis=1)

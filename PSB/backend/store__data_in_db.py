@@ -1,4 +1,5 @@
 
+# this is needed to store ind db all csv's owr team made in notebooks 🥲🥲🥲
 
 import db.session as ds
 import pandas as pd
