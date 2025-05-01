@@ -1,3 +1,7 @@
 PSB/data
 .DS_STore
-results/test_predictions.csv
+results/
+PSB/notebooks/p_copy.py
+PSB/notebooks/t_copy.py
+PSB/notebooks/training_with_feature_selection.ipynb
+PSB/notebooks/xgboost
