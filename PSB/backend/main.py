@@ -29,4 +29,11 @@ async def get_organization(organization: Organization):
 async def get_organization(organization: Organization):
     return di.load_by_inn("organizations", organization.inn).to_dict("records")
 
+@app.post("/load_organizarion_kad_arbitr")
+async def get_organization(organization: Organization):
+    return di.load_by_inn("kad_arbitr", organization.inn).to_dict("records")
+
+@app.post("/load_organizarion_egrul")
+async def get_organization(organization: Organization):
+    return di.load_by_inn("egrul", organization.inn).to_dict("records")
 
