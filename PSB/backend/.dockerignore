@@ -5,3 +5,5 @@ __pycache__
 *.pyd
 *.csv
 *.json
+.venv/
+venv/
