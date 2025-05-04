@@ -18,7 +18,7 @@ class PGNParserWorker(BaseWorker):
 
     def setup_engine(self):
         """Initialize the chess engine"""
-        self.engine = ChessEngine("stockfish/stockfish-windows-x86-64-avx2.exe")
+        self.engine = ChessEngine("stockfish/stockfish-ubuntu-x86-64-avx2")
 
     def get_opening_from_pgn(self, game: chess.pgn.Game) -> tuple:
         """Get the opening name and code from the PGN"""
