@@ -5,7 +5,7 @@ import uuid
 from common.message import Job, JobType, JobStatus
 from common.redis_utils import redis_client
 from common.rabbitmq_utils import rabbitmq_client
-from common.storage_utils import storage_client
+from Friflex.common.storage_utils import storage_client
 
 app = FastAPI(title="Chess Video Service API Gateway")
 
