@@ -1,0 +1,41 @@
+import os
+import torch
+import torchaudio
+from TTS.tts.configs.xtts_config import XttsConfig
+from TTS.tts.models.xtts import Xtts
+
+from TTS.utils.manage import ModelManager
+from TTS.utils.synthesizer import Synthesizer
+
+# Initialize model (bypass high-level API)
+print("Download model...")
+model_manager = ModelManager()
+model_path, config_path, model_item = model_manager.download_model("tts_models/multilingual/multi-dataset/xtts_v2")
+
+
+
+print("Loading model...")
+config = XttsConfig()
+config.load_json(config_path)
+model = Xtts.init_from_config(config)
+model.load_checkpoint(config, checkpoint_dir=model_path, use_deepspeed=True)
+model.cuda()
+
+
+
+print("Computing speaker latents...")
+gpt_cond_latent, speaker_embedding = model.get_conditioning_latents(audio_path=["in/speaker.wav"])
+
+
+
+print("Inference...")
+out = model.inference(
+    "some text",
+    "en",
+    gpt_cond_latent,
+    speaker_embedding,
+    temperature=1.7, 
+    speed=1.5
+)
+
+torchaudio.save("out/some.wav", torch.tensor(out["wav"]).unsqueeze(0), 24000)
