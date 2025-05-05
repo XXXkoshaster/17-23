@@ -6,14 +6,6 @@ import soundfile as sf
 import numpy as np
 import librosa
 
-# from PIL import ImageFont
-
-# try:
-#     font = ImageFont.truetype(r"C:/Windows/Fonts/Noto Sans Devanagari.ttf", size=36)
-#     print("Шрифт работает!")
-# except Exception as e:
-#     print("Ошибка:", e)
-
 parser = argparse.ArgumentParser(
     description="Нарезка видео на фрагменты по временным меткам из JSON"
 )
@@ -44,16 +36,13 @@ music_volume = 0.2
 voice, _ = librosa.load(args.voice, sr=SR)
 music, _ = librosa.load(args.music, sr=SR)
 
-# Загрузка видео без аудио
 video = VideoFileClip(args.path_to_clip).without_audio()
 video_duration = video.duration  # в секундах
 
-# Растяжение voice под длину видео
 voice_duration = librosa.get_duration(y=voice, sr=SR)
 stretch_rate = voice_duration / video_duration
 voice = librosa.effects.time_stretch(voice, rate=stretch_rate)
 
-# Приведение music к той же длине, что и voice
 target_len = len(voice)
 if len(music) < target_len:
     padding = np.zeros(target_len - len(music))
@@ -63,7 +52,7 @@ else:
 
 # Смешивание с учетом громкости
 mixed = voice * voice_volume + music * music_volume
-mixed /= np.max(np.abs(mixed)) + 1e-9  # Нормализация
+mixed /= np.max(np.abs(mixed)) + 1e-9 
 
 
 sf.write(f"music/mixed_output_{args.number}_{args.language}.wav", mixed, 44100)
@@ -76,13 +65,13 @@ with open(args.json, 'r', encoding='utf-8') as f:
 
 max_message_length = 35
 color = 'white'
-# if args.language == "hi":
-#     font_path = "C:/Windows/Fonts/Noto_Sans_Devanagari.ttf"
-# else:
-#     font_path = "C:/Windows/Fonts/Arial.ttf"
+if args.language == "hi": 
+    font_path = r"C:\Fonts\NotoSansDevanagari-Regular.ttf"
+elif args.language == "zh":
+    font_path = r"C:\Fonts\NotoSansSC-VariableFont_wght.ttf"
+else:
+    font_path = r"C:/Windows/Fonts/Arial.ttf"
 
-
-font_path = "C:/Windows/Fonts/Arial.ttf"
 text_clips = []
 
 text = comment['comment']
@@ -131,6 +120,3 @@ final.write_videofile(f"Shorts/video_with_comments_{args.number}_{args.language}
                     preset="ultrafast",
                     threads=4,
                     fps=24)
-
-
-
