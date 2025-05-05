@@ -3,13 +3,11 @@ import requests
 import time
 from typing import Optional
 
-# Configuration
 API_GATEWAY_URL = "http://api_gateway:8000"
 
 def main():
     st.title("Chess Video Processing Service")
     
-    # Input form
     with st.form("video_form"):
         video_url = st.text_input("Enter YouTube Video URL")
         target_language = st.selectbox(
@@ -20,7 +18,6 @@ def main():
         submitted = st.form_submit_button("Process Video")
     
     if submitted and video_url:
-        # Submit job
         response = requests.post(
             f"{API_GATEWAY_URL}/process-video",
             json={
@@ -33,7 +30,6 @@ def main():
             job_id = response.json()["job_id"]
             st.success(f"Job submitted successfully! Job ID: {job_id}")
             
-            # Monitor job status
             with st.empty():
                 while True:
                     status_response = requests.get(
