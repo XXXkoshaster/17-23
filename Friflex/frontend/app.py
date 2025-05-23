@@ -11,7 +11,7 @@ def main():
     with st.form("video_form"):
         video_url = st.text_input("Enter YouTube Video URL")
         target_language = st.selectbox(
-            "Target Language",
+            "Target Language",    
             ["en", "es", "fr", "de", "ru"],
             index=0
         )
