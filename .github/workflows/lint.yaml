@@ -1,0 +1,30 @@
+name: Lint Code
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  build:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    
+    permissions: 
+      contents: read
+      packages: read
+      statusses: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 0
+      
+      - name: Lint Code
+        uses: github/super-linter@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
