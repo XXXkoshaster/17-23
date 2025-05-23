@@ -16,7 +16,7 @@ jobs:
     permissions: 
       contents: read
       packages: read
-      statusses: write
+      statuses: write
 
     steps:
       - name: Checkout Code
