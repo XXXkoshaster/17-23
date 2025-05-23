@@ -25,4 +25,5 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: true
           VALIDATE_PYTHON_RUFF: true
+          VALIDATE_PYTHON_FLAKE8: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
